@@ -1,28 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../models/duplicate_group.dart';
 import '../../../models/file_item.dart';
 import '../../../widgets/file_tile.dart';
+import '../../../core/utils/format.dart';
 import '../../review/ui/review_screen.dart';
+import '../../scan/controller/scan_controller.dart';
 
-class DuplicatesListView extends StatefulWidget {
-  const DuplicatesListView({super.key, this.groups = const []});
+class DuplicatesListView extends ConsumerStatefulWidget {
+  const DuplicatesListView({super.key});
+  
+  @override
+  ConsumerState<DuplicatesListView> createState() => _DuplicatesListViewState();
+}
+
+class _DuplicatesListViewOld extends StatefulWidget {
+  const _DuplicatesListViewOld({this.groups = const []});
   final List<DuplicateGroup> groups;
   @override
   State<DuplicatesListView> createState() => _DuplicatesListViewState();
 }
 
-class _DuplicatesListViewState extends State<DuplicatesListView> {
+class _DuplicatesListViewState extends ConsumerState<DuplicatesListView> {
   final Set<String> _selectedToRemove = <String>{};
   int get _count => _selectedToRemove.length;
 
   @override
   Widget build(BuildContext context) {
-    final groups = widget.groups;
-    if (groups.isEmpty) {
-      return const Scaffold(body: Center(child: Text('No duplicates found yet')));
-    }
+    final scanResult = ref.watch(scanControllerProvider);
+    
+    return scanResult.when(
+      data: (result) {
+        final groups = result?.duplicates ?? [];
+        if (groups.isEmpty) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Duplicates'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go('/results'),
+              ),
+            ),
+            body: const Center(child: Text('No duplicates found yet')),
+          );
+        }
+        return _buildDuplicatesList(context, groups);
+      },
+      loading: () => Scaffold(
+        appBar: AppBar(
+          title: const Text('Duplicates'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/results'),
+          ),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stack) => Scaffold(
+        appBar: AppBar(
+          title: const Text('Duplicates'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/results'),
+          ),
+        ),
+        body: Center(
+          child: Text('Error: ${error.toString()}'),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDuplicatesList(BuildContext context, List<DuplicateGroup> groups) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Duplicates'),
@@ -70,11 +121,29 @@ class _DuplicatesListViewState extends State<DuplicatesListView> {
             FilledButton.icon(
               onPressed: _count == 0
                   ? null
-                  : () => Navigator.of(context).push(
+                  : () {
+                      // Get all selected files from groups
+                      final selectedFiles = <FileItem>[];
+                      int totalBytes = 0;
+                      
+                      for (final group in groups) {
+                        final filesToRemove = group.items
+                            .where((item) => _selectedToRemove.contains(item.id))
+                            .toList();
+                        selectedFiles.addAll(filesToRemove);
+                        totalBytes += filesToRemove.fold<int>(0, (sum, item) => sum + item.size);
+                      }
+                      
+                      Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const ReviewAndConfirmView(count: 0, bytesLabel: '—'),
+                          builder: (_) => ReviewAndConfirmView(
+                            count: selectedFiles.length,
+                            bytesLabel: formatBytes(totalBytes),
+                            filesToDelete: selectedFiles,
+                          ),
                         ),
-                      ),
+                      );
+                    },
               icon: const Icon(Icons.check),
               label: const Text('Review'),
             ),
