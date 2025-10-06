@@ -12,20 +12,22 @@ class ScanProgressView extends ConsumerWidget {
     final scan = ref.watch(scanControllerProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Scanning')),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16),
         child: scan.when(
           data: (r) => Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Scan complete'),
+              const Text('Scan complete', style: TextStyle(fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
               if (r != null) ...[
-                Text('Files: ${r.discoveredCount}'),
-                Text('Reclaimable: ${r.bytesReclaimable} bytes'),
-              ],
+                _RowTile(label: 'Files', value: r.discoveredCount.toString()),
+                _RowTile(label: 'Reclaimable', value: '${r.bytesReclaimable} B'),
+              ] else const Text('No results'),
             ],
           ),
-          error: (e, _) => Text('Error: $e'),
-          loading: () => const CircularProgressIndicator(),
+          error: (e, _) => SingleChildScrollView(child: Text('Error: $e')),
+          loading: () => const Center(child: CircularProgressIndicator()),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -41,6 +43,22 @@ class ScanProgressView extends ConsumerWidget {
         },
         child: const Icon(Icons.play_arrow),
       ),
+    );
+  }
+}
+
+class _RowTile extends StatelessWidget {
+  const _RowTile({required this.label, required this.value});
+  final String label;
+  final String value;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(children: [
+        Expanded(child: Text(label, style: Theme.of(context).textTheme.bodyMedium)),
+        Text(value, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+      ]),
     );
   }
 }
