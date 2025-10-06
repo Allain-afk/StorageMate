@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'features/scan/ui/scan_progress_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: StorageMateApp()));
@@ -9,7 +10,7 @@ void main() {
 final _router = GoRouter(
   routes: <RouteBase>[
     GoRoute(path: '/', name: 'dashboard', builder: (ctx, st) => const DashboardScreen()),
-    GoRoute(path: '/scan', name: 'scan', builder: (ctx, st) => const ScanProgressScreen()),
+    GoRoute(path: '/scan', name: 'scan', builder: (ctx, st) => const ScanProgressView()),
     GoRoute(path: '/results', name: 'results', builder: (ctx, st) => const ResultsScreen()),
     GoRoute(path: '/duplicates', name: 'duplicates', builder: (ctx, st) => const DuplicatesScreen()),
     GoRoute(path: '/junk', name: 'junk', builder: (ctx, st) => const JunkScreen()),
