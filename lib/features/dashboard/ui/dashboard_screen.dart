@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../widgets/section.dart';
+import '../../../utils/back_handler.dart';
 import '../../../widgets/stats_cards.dart';
 
 class DashboardView extends StatelessWidget {
@@ -9,7 +10,8 @@ class DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DoubleBackToExit(
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('StorageMate'),
         actions: [
@@ -59,6 +61,7 @@ class DashboardView extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'features/scan/ui/scan_progress_screen.dart';
 import 'features/dashboard/ui/dashboard_screen.dart';
+import 'app_shell.dart';
+import 'features/results/ui/results_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: StorageMateApp()));
@@ -10,9 +12,14 @@ void main() {
 
 final _router = GoRouter(
   routes: <RouteBase>[
-    GoRoute(path: '/', name: 'dashboard', builder: (ctx, st) => const DashboardView()),
-    GoRoute(path: '/scan', name: 'scan', builder: (ctx, st) => const ScanProgressView()),
-    GoRoute(path: '/results', name: 'results', builder: (ctx, st) => const ResultsScreen()),
+    ShellRoute(
+      builder: (ctx, st, child) => AppShell(child: child),
+      routes: [
+        GoRoute(path: '/', name: 'dashboard', builder: (ctx, st) => const DashboardView()),
+        GoRoute(path: '/scan', name: 'scan', builder: (ctx, st) => const ScanProgressView()),
+        GoRoute(path: '/results', name: 'results', builder: (ctx, st) => const ResultsView()),
+      ],
+    ),
     GoRoute(path: '/duplicates', name: 'duplicates', builder: (ctx, st) => const DuplicatesScreen()),
     GoRoute(path: '/junk', name: 'junk', builder: (ctx, st) => const JunkScreen()),
     GoRoute(path: '/recents', name: 'recents', builder: (ctx, st) => const RecentsScreen()),
@@ -26,9 +33,21 @@ class StorageMateApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final base = ThemeData(useMaterial3: true, colorSchemeSeed: Colors.teal);
+    final theme = base.copyWith(
+      appBarTheme: const AppBarTheme(centerTitle: false),
+      navigationBarTheme: NavigationBarThemeData(
+        indicatorColor: Colors.teal.withValues(alpha: .15),
+        labelTextStyle: WidgetStatePropertyAll(base.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600)),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
     return MaterialApp.router(
       title: 'StorageMate',
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.teal),
+      theme: theme,
       routerConfig: _router,
     );
   }

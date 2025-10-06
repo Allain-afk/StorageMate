@@ -12,7 +12,7 @@
     <!-- Optional high-privilege. Do NOT request at runtime by default; guide user to SAF. -->
     <!-- <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" /> -->
     <application
-        android:label="storagemate"
+        android:label="Storage Mate"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">

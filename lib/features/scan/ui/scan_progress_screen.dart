@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controller/scan_controller.dart';
 import '../../../core/services/permissions_service.dart';
+import '../../../core/utils/format.dart';
 
 class ScanProgressView extends ConsumerWidget {
   const ScanProgressView({super.key});
@@ -22,7 +23,7 @@ class ScanProgressView extends ConsumerWidget {
               const SizedBox(height: 12),
               if (r != null) ...[
                 _RowTile(label: 'Files', value: r.discoveredCount.toString()),
-                _RowTile(label: 'Reclaimable', value: '${r.bytesReclaimable} B'),
+                _RowTile(label: 'Reclaimable', value: formatBytes(r.bytesReclaimable)),
               ] else const Text('No results'),
             ],
           ),
