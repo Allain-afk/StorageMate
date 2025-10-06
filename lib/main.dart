@@ -5,6 +5,11 @@ import 'features/scan/ui/scan_progress_screen.dart';
 import 'features/dashboard/ui/dashboard_screen.dart';
 import 'app_shell.dart';
 import 'features/results/ui/results_screen.dart';
+import 'features/duplicates/ui/duplicates_screen.dart';
+import 'features/junk/ui/junk_screen.dart';
+import 'features/recents/ui/recents_screen.dart';
+import 'features/review/ui/review_screen.dart';
+import 'features/settings/ui/settings_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: StorageMateApp()));
@@ -18,13 +23,13 @@ final _router = GoRouter(
         GoRoute(path: '/', name: 'dashboard', builder: (ctx, st) => const DashboardView()),
         GoRoute(path: '/scan', name: 'scan', builder: (ctx, st) => const ScanProgressView()),
         GoRoute(path: '/results', name: 'results', builder: (ctx, st) => const ResultsView()),
+        GoRoute(path: '/duplicates', name: 'duplicates', builder: (ctx, st) => const DuplicatesListView()),
+        GoRoute(path: '/junk', name: 'junk', builder: (ctx, st) => const JunkListView()),
+        GoRoute(path: '/recents', name: 'recents', builder: (ctx, st) => const RecentsListView()),
+        GoRoute(path: '/review', name: 'review', builder: (ctx, st) => const ReviewAndConfirmView()),
+        GoRoute(path: '/settings', name: 'settings', builder: (ctx, st) => const SettingsView()),
       ],
     ),
-    GoRoute(path: '/duplicates', name: 'duplicates', builder: (ctx, st) => const DuplicatesScreen()),
-    GoRoute(path: '/junk', name: 'junk', builder: (ctx, st) => const JunkScreen()),
-    GoRoute(path: '/recents', name: 'recents', builder: (ctx, st) => const RecentsScreen()),
-    GoRoute(path: '/review', name: 'review', builder: (ctx, st) => const ReviewAndConfirmScreen()),
-    GoRoute(path: '/settings', name: 'settings', builder: (ctx, st) => const SettingsScreen()),
   ],
 );
 

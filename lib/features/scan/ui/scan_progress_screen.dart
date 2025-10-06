@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../controller/scan_controller.dart';
 import '../../../core/services/permissions_service.dart';
@@ -12,7 +13,13 @@ class ScanProgressView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scan = ref.watch(scanControllerProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Scanning')),
+      appBar: AppBar(
+        title: const Text('Scanning'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: scan.when(
@@ -24,6 +31,15 @@ class ScanProgressView extends ConsumerWidget {
               if (r != null) ...[
                 _RowTile(label: 'Files', value: r.discoveredCount.toString()),
                 _RowTile(label: 'Reclaimable', value: formatBytes(r.bytesReclaimable)),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => context.go('/results'),
+                    icon: const Icon(Icons.list_alt),
+                    label: const Text('View Results'),
+                  ),
+                ),
               ] else const Text('No results'),
             ],
           ),
